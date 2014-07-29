@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Title Goes Here</title>
+      <link rel='stylesheet' href='/stylesheets/style.css' />
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+      <script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
+      <script type="text/javascript">
+         $(document).ready(function(){  
+            
+            //INITIAL SIGN IN
+            io = io.connect();
+            var name = prompt('Please enter your name:');
+            if(name == null || name.length == 0){
+               window.location.href = "/";
+            }
+            io.emit('ready', name);
+            
+            //EXISTING USERS WILL LISTEN FOR THE ARRIVAL OF A NEW USER
+            //ONE NEW CHATBOX WILL BE AUTOMATICALLY ADDED
+            //CHATBOX ID ISN'T WORKING CORRECTLY FOR THE FIRST USER ...
+            io.on('new_user', function(data) {
+               console.log(data);
+               $('#announcement').text('A new user has joined: ' + data.name + '.');
+               $('#chat-container').append("<div class='chatbox' id='box" + data.id + "'><textarea class='notepad' id='" + data.id + "' readonly></textarea><h4 class='name-bar'>" + data.name + "</h4></div>");
+            })
+
+            //NEW USER WILL LISTEN FOR AN OBJECT CONTAINING ALL EXISTING USERS
+            //CHATBOXES WILL BE GENERATED FOR ALL EXISTING USERS
+            //IF STATEMENT WILL CHECK WHEN LOOP IS ON CLIENT
+            //CHANGES TEXTBOX ATTR SO ONLY THE CLIENT CAN TYPE IN THEIR BOX
+            io.on('existing_users', function(data){
+               console.log('existing users recieved', data);
+               _.each(data.users, function(value, key, array){
+                  $('#chat-container').append("<div class='chatbox' id='box" + key + "'><textarea class='notepad' id='" + key + "' readonly></textarea><h4 class='name-bar'>" + value + "</h4></div>");
+                  if(data.session.id_number == key){
+                     $('#'+key).attr('readonly', false);
+                  }
+               })//END .EACH LOOP
+            })
+
+            //HIDE CHATBOX OF ANY USER THAT DISCONNECTS
+            io.on('user_disconnected', function(data){
+               console.log("DISCONNECTED------------");
+               console.log(data);
+               $('#box'+data.id).fadeOut().remove();
+            })
+
+            
+            //TRACK ALL CHANGES TO TEXT IN CHATBOXES
+            $(document).on('keyup', '.notepad', function(){  
+               var id = $(this).attr('id');
+               var text = $(this).val();
+               io.emit('updating_text', {'id': id, 'text': text});
+            });
+
+            io.on('text_update', function(data){
+               $('#' + data.id).val(data.text);
+            })
+
+         })
+      </script>
+   </head>
+   <body>
+      <h1>Chatroom</h1>
+      <p id="announcement"></p>
+      <div id='chat-container'>
+          <div class="chatbox" id="#">
+            <textarea class="notepad" id="#" placeholder="Gary is always here." readonly></textarea>
+            <h4 class="name-bar">Gary</h4>
+         </div>
+      </div>
+   </body>
+</html>

@@ -1,0 +1,23 @@
+body {
+  padding: 20px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#chat-container{
+	border: 2px dotted gray;
+}
+
+.chatbox{
+	display: inline-block;
+	border: 3px solid black;
+}
+
+.notepad{
+	height: 150px;
+	width: 150px;
+}
+
+.name-bar{
+	margin: auto;
+	text-align: center;
+}

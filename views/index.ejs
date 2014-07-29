@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Title Goes Here</title>
+      <link rel='stylesheet' href='/stylesheets/style.css' />
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+      <script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
+      <script type="text/javascript">
+         $(document).ready(function(){  
+            io = io.connect();
+         });
+      </script>
+   </head>
+   <body>
+      <h1>Welcome to The Node Party</h1>
+      <p>Would you like to:</p>
+      <ul>
+         <li><a href="/draw">Collaboratively draw?</a></li>
+         <li><a href="/chat">Live chat?</a></li>
+         <li><a href="#">Enter a chatroom?</a></li>
+      </ul>
+     
+      
+   </body>
+</html>
